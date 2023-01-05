@@ -6,3 +6,14 @@ NOTE: The code provided in the bot.py file may not work for you as your browser'
 
 Try to avoid giving your cookies out as it can lead to others gaining access to your account.
 Like the official documentation for genshinstats suggests, create an alternate account and use the cookies associated with that account if you were to make them public.
+
+To allow the program to know which discord bot to perform these actions on, make sure you have a file just called .env
+
+Then just do:
+TOKEN = {your_token}
+removing the curly braces after you put your unique bot identifier - aka the token 
+
+If you are using repl.it, you cannot create a file that is called .env so you have to go to the secrets portion and input your token information there
+
+NOTE: If you are using discord.py v1.5 make sure that the bot has all intent permissions activated
+Repl.it does not use a version of discord.py that utilizes that, therefore if you plan to only host on repl.it that does not need to be done.
