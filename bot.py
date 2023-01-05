@@ -7,7 +7,13 @@ from dotenv import load_dotenv
 import json
 from json.decoder import JSONDecodeError
 
-client = discord.Client()
+# need intents since repl.it uses a different version of discord.py
+# intents = discord.Intents(messages=True, guilds=True, reactions = True)
+# intents.reactions = True
+# intents.members = True
+# reactions, members, guilds, and messages should be the only intents I need but it causes error so all 
+intents = discord.Intents.all()
+client = discord.Client(intents=intents)
 
 sad_words = ["sad", "depressed", "unhappy", "angry", "miserable"]
 starter_encouragements = [
@@ -47,6 +53,11 @@ async def on_ready():
   global user_to_UID
   print('We have logged in as {0.user}'.format(client))
   # grab UID info from this or smth
+  gs.set_cookie_auto()
+  
+  # error since vs was in personal_projects dir
+  # not the folder where this is stored
+  # cd genshinstat_figure_out
   with open("uid.json") as openfile:
  
     # Reading from json file
@@ -57,73 +68,78 @@ async def on_ready():
     except JSONDecodeError:
         pass
 
+  print("finished setting up")
+
 @client.event
 async def on_message(message):
-    if message.author == client.user:
-        # so we don't check the bot's own messages
-        return
-    msg = message.content
-    if msg.startswith('$inspire'):
-      quote = get_quote()
-      await message.channel.send(quote)
-      await message.channel.send(message.author)
+  print("message received")
+  if message.author == client.user:
+      # so we don't check the bot's own messages
+      return
+  msg = message.content
+  if msg.startswith('$inspire'):
+
+    quote = get_quote()
+    await message.channel.send(quote)
+    await message.channel.send(message.author)
+
       
-    elif msg.startswith("$gstore"):
-      if msg.startswith("$gstore "):
-        uid = msg[msg.index(" ") + 1::]
-        # await message.channel.send(uid)
-        # check if uid is valid
+  elif msg.startswith("$gstore"):
+    if msg.startswith("$gstore "):
+      uid = msg[msg.index(" ") + 1::]
+      # await message.channel.send(uid)
+      # check if uid is valid
 
-        # remove any instance of leading space like: 
-        # $gstore    1239    blah
-        uid.strip()
-        if ( uid.isdigit() and len(uid) == 9):
-          # valid
+      # remove any instance of leading space like: 
+      # $gstore    1239    blah
+      uid.strip()
+      if ( uid.isdigit() and len(uid) == 9):
+        # valid
 
-          if message.author in user_to_UID:
-            await message.channel.send("You already stored your UID, but I have overriden it")
+        if message.author in user_to_UID:
+          await message.channel.send("You already stored your UID, but I have overriden it")
 
-          # now just add to dict and then add to the json file
-          user_to_UID[str(message.author)] = int(uid)
-          with open("uid.json", "w") as outfile:
-            json.dump(user_to_UID, outfile)
-          await message.channel.send("UID stored")
-        else:
-          await message.channel.send("Invalid UID. try again")
+        # now just add to dict and then add to the json file
+        user_to_UID[str(message.author)] = int(uid)
+        with open("uid.json", "w") as outfile:
+          json.dump(user_to_UID, outfile)
+        await message.channel.send("UID stored")
       else:
-        await message.channel.send("Please format as $gstore {uid}")
-        # 9 digits doesn't have leading 0s but first digit is 1-9 
+        await message.channel.send("Invalid UID. try again")
+    else:
+      await message.channel.send("Please format as $gstore {uid}")
+      # 9 digits doesn't have leading 0s but first digit is 1-9 
 
-    elif msg.startswith("$gdaily"):
-      # claim daily achievement
-      pass
+  elif msg.startswith("$gdaily"):
+    # claim daily achievement
+    pass
 
-    elif msg.startswith("$gnotes"):
-      # get notes of user aka:
-      # current resin, expeditions, daily commissions and similar.
-      
-      # check if user has uid stored
-      if str(message.author) in user_to_UID:
-        # what to do if uid meets the valid criteria but DNE?
-        # can do a try/except block 
-        notes = gs.get_notes(user_to_UID[str(message.author)])
-        print(notes["resin"])
-        print(notes["expeditions"])
-        print(notes)
-      else:
-        await message.channel.send("Please store a UID first as $gstore {uid} before calling $gnotes")
+  elif msg.startswith("$gnotes"):
+    # get notes of user aka:
+    # current resin, expeditions, daily commissions and similar.
+    
+    # check if user has uid stored
+    if str(message.author) in user_to_UID:
+      # what to do if uid meets the valid criteria but DNE?
+      # can do a try/except block 
+      notes = gs.get_notes(user_to_UID[str(message.author)])
+      print(notes["resin"])
+      print(notes["expeditions"])
+      print(notes)
+    else:
+      await message.channel.send("Please store a UID first as $gstore {uid} before calling $gnotes")
 
-      
-    elif msg.startswith('$grecord'):
-      # get data from temp.json
-      # also see what the rest of the grecond says
-      # new record
-      # have dict for each user ( user to list of lists of records?)
-      # boracle : [[raiden, pryo, burst, 10000]]
-      pass
-      
-    if any(word in msg for word in sad_words):
-      await message.channel.send(random.choice(starter_encouragements))
+    
+  elif msg.startswith('$grecord'):
+    # get data from temp.json
+    # also see what the rest of the grecond says
+    # new record
+    # have dict for each user ( user to list of lists of records?)
+    # boracle : [[raiden, pryo, burst, 10000]]
+    pass
+    
+  if any(word in msg for word in sad_words):
+    await message.channel.send(random.choice(starter_encouragements))
 
 
 
