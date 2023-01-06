@@ -1,5 +1,7 @@
 This is a discord bot that I made that used to run on Repl.it before I moved it to a local machine
 
+[Here is a link to the official page for the genshinstats module](https://github.com/thesadru/genshinstats)
+
 It allows users to grab information about their genshin account without needing to login along with performing many menial tasks automatically for you.
 
 NOTE: The code provided in the bot.py file may not work for you as your browser's may not have the proper cookies that allow genshin's private api to validate you.
