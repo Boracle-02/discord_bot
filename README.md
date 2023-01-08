@@ -18,4 +18,7 @@ removing the curly braces after you put your unique bot identifier - aka the tok
 If you are using repl.it, you cannot create a file that is called .env so you have to go to the secrets portion and input your token information there
 
 NOTE: If you are using discord.py v1.5 make sure that the bot has all intent permissions activated
-Repl.it does not use a version of discord.py that utilizes that, therefore if you plan to only host on repl.it that does not need to be done.
+As of testing on 1/7/2023 Repl.it does not use a version of discord.py that utilizes that, therefore if you plan to only host on repl.it that does not need to be done.
+
+The functionality for claiming your daily log in rewards depends on the cookie data from the host's browsers. Therefore, this bot functionality is limited to the host.
+You can bypass this by setting cookie parameters, but that requires the other users' cookie data which may lead to accounts being hacked.
