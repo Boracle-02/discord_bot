@@ -22,3 +22,5 @@ As of testing on 1/7/2023 Repl.it does not use a version of discord.py that util
 
 The functionality for claiming your daily log in rewards depends on the cookie data from the host's browsers. Therefore, this bot functionality is limited to the host.
 You can bypass this by setting cookie parameters, but that requires the other users' cookie data which may lead to accounts being hacked.
+
+The gnotes function will make a lot of your information public and shared into the channel in which you invoke that command. 
