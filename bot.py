@@ -250,7 +250,7 @@ async def on_message(message):
     else:
       await message.channel.send("You have no uid stored here. You can store one by using the $gstore \{uid\} command.")
       await message.channel.send("Don't include the curly braces as well!")
-  elif msg.startswith("gspiral"):
+  elif msg.startswith("$gspiral"):
     try:
       if str(message.author) in user_to_UID:
         data = gs.get_spiral_abyss(user_to_UID[str(message.author)])
@@ -292,6 +292,99 @@ async def on_message(message):
       # should only happen on wrong uid and incorrect permissions
       # print(e)
       await message.channel.send("Failed to grab spiral abyss information. Check to make sure you uid is stored properly and that your account is public.")
+      await message.channel.send(embed = instructions_hoyo_public())
+  elif msg.startswith("$gcharsall"):
+    # get activities
+    try:
+      data = gs.get_characters(user_to_UID[str(message.author)])
+      await message.channel.send("You have {} characters".format(len(data)))
+      for char_dict in data:
+        # so char_dict is essentially a dict of a character's information
+        # can't do 1 await message.channel.send bc msg can become too long to send
+        # Error message: In content: Must be 2000 or fewer in length.
+        msg = "Your {} is a {} {} star who is level {} and is C{}.".format(char_dict["name"], char_dict["element"], char_dict["rarity"], char_dict["level"], char_dict["constellation"])
+        await message.channel.send(msg)
+    except Exception as e:
+      print(e)
+      await message.channel.send("Failed to grab character information. Check to make sure you uid is stored properly and that your account is public.")
+      await message.channel.send(embed = instructions_hoyo_public())
+  elif msg.startswith("$gchars5"):
+    # just do 5 stars
+    try:
+      data = gs.get_characters(user_to_UID[str(message.author)])
+      list_5 = []
+      
+      for char_dict in data:
+        if char_dict["rarity"] == 5:
+          # don't want to send message here since I want a pre-text before it all
+          list_5.append(char_dict)
+
+      if len(list_5) == 1:
+        await message.channel.send("You have 1 5 star character")
+        await message.channel.send("Your {} is a {} {} star who is level {} and is C{}.".format(list_5[0]["name"], list_5[0]["element"], list_5[0]["rarity"], list_5[0]["level"], list_5[0]["constellation"]))
+      else:
+        await message.channel.send("You have {} 5 star characters".format(len(list_5)))
+        for char_dict in list_5:
+          # remember can't do 1 await message.channel.send bc msg can become too long to send
+          # Error message: In content: Must be 2000 or fewer in length.
+          await message.channel.send("Your {} is a {} {} star who is level {} and is C{}.".format(char_dict["name"], char_dict["element"], char_dict["rarity"], char_dict["level"], char_dict["constellation"]))
+    except Exception as e:
+      print(e)
+      await message.channel.send("Failed to grab 5 character information. Check to make sure you uid is stored properly and that your account is public.")
+      await message.channel.send(embed = instructions_hoyo_public())
+  
+  elif msg.startswith("$gstats"):
+    try:
+      data = gs.get_user_stats(user_to_UID[str(message.author)])["stats"]
+
+      msg = ""
+      if data["achievements"] == 1:
+        msg += "You have 1 achievement and "
+      else:
+        msg += "You have {} achievements and ".format(data["achievements"])
+      
+      if data["active_days"] == 1:
+        msg += "have played for 1 day."
+      else:
+        msg += "have played for {} days.".format(data["active_days"])
+      
+      msg += "\nYou have also collected {}/66 anemoculi, {}/131 geoculi, and {}/181 electroculi.".format(data["anemoculi"], data["geoculi"], data["electroculi"])
+      # add dendroculi when it becomes available and eventually other -oculi as they appear
+
+      if data["unlocked_waypoints"] == 1:
+        msg += "\nYou have unlocked 1 waypoint and "
+      else:
+        msg += "\nYou have unlocked {} waypoints and ".format(data["unlocked_waypoints"])
+
+      if data["unlocked_domains"] == 1:
+        msg += "1 domain."
+      else:
+        msg += "{} domains.".format(data["unlocked_domains"])
+      
+      await message.channel.send(msg)
+    except Exception as e:
+      # public or not matters
+
+      await message.channel.send("Failed to grab account statistics. Check to make sure you uid is stored properly and that your account is public.")
+      await message.channel.send(embed = instructions_hoyo_public())
+  elif msg.startswith("$gchests"):
+    try:
+      data = gs.get_user_stats(user_to_UID[str(message.author)])["stats"]
+      # also calculate primos ish avg
+      print(data)
+    except Exception as e:
+      # public or not matters
+
+      await message.channel.send("Failed to grab account chest collection information. Check to make sure you uid is stored properly and that your account is public.")
+      await message.channel.send(embed = instructions_hoyo_public())
+  elif msg.startswith("$gexploration"):
+    try:
+      data = gs.get_user_stats(user_to_UID[str(message.author)])["exploration"]
+      print(data)
+    except Exception as e:
+      # public or not matters
+
+      await message.channel.send("Failed to grab account exploration information. Check to make sure you uid is stored properly and that your account is public.")
       await message.channel.send(embed = instructions_hoyo_public())
   elif msg.startswith('$grecord'):
     # get data from temp.json
